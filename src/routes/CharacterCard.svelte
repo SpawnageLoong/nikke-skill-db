@@ -8,7 +8,7 @@
 
 <a
 	href="/characters/{character.id}"
-	class="rarity relative cursor-pointer {character.rarity === "SSR"
+	class="rarity relative cursor-pointer {character.rarity === "ssr"
 		? 'rarity-ssr'
 		: 'rarity-sr'}"
 >
