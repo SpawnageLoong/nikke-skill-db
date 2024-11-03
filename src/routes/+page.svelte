@@ -23,9 +23,12 @@
 	};
 
 	function filterList() {
-		list = $characters.filter(
-			(c) => (filter.elements[c.element] && filter.weapons[c.weapon])
-		);
+		list = $characters.filter((character) => {
+			return (
+				filter.elements[character.element] &&
+				filter.weapons[character.weapon]
+			);
+		});
 	}
 
 	function toggleFilter(type: 'elements' | 'weapons', id: string) {
@@ -49,7 +52,7 @@
 
 	onMount(() => {
 		const unsub = characters.subscribe(() => {
-			//filterList();
+			filterList();
 		});
 
 		return () => unsub();
@@ -60,7 +63,6 @@
 	<title>Characters | Nikke Skill DB</title>
 </svelte:head>
 
-<Title>{$characters}</Title>
 <div class="mb-4 flex flex-col gap-8 md:flex-row">
 	<div class="flex justify-center gap-2 md:justify-normal">
 		{#each $elements as element}

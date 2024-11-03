@@ -7,9 +7,7 @@ const defaultLocale: CharacterJson = defaulCharacterJson;
 
 const characters = writable<Character[]>([]);
 
-let currentLocale = 'en';
-
-function load(json: CharacterJson, locale: string) {
+function load(json: CharacterJson) {
 	const list = Object.values(json).sort((a, b) => a.name.localeCompare(b.name));
 	characters.set(list);
 
@@ -19,6 +17,6 @@ function load(json: CharacterJson, locale: string) {
 	}, {});
 }
 
-load(defaultLocale, 'en');
+load(defaultLocale);
 
 export default characters;
