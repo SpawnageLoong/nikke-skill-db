@@ -63,6 +63,7 @@
 	<title>Characters | Nikke Skill DB</title>
 </svelte:head>
 
+<Title>Characters</Title>
 <div class="mb-4 flex flex-col gap-8 md:flex-row">
 	<div class="flex justify-center gap-2 md:justify-normal">
 		{#each $elements as element}
