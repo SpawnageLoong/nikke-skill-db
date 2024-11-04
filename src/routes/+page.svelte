@@ -1,35 +1,65 @@
 <script lang="ts">
 	import CharacterCard from './CharacterCard.svelte';
 	import Title from '$components/Title.svelte';
-	import characters from '$data/characters';
-	import elements from '$data/elements';
-	import weapons from '$data/weapons';
+	import charactersJson from '$data/characters/en.json';
+	import elementsJson from '$data/elements/en.json';
+	import weaponsJson from '$data/weapons/en.json';
 	import { onMount } from 'svelte';
+	import type { Character } from '$types';
 
-	let list = $characters;
-	let filter: { elements: { [key: string]: boolean }; weapons: { [key: string]: boolean } } = {
-		elements: {
-			...$elements.reduce<{ [key: string]: boolean }>((prev, cur) => {
-				prev[cur.id] = true;
-				return prev;
-			}, {})
-		},
-		weapons: {
-			...$weapons.reduce<{ [key: string]: boolean }>((prev, cur) => {
-				prev[cur.id] = true;
-				return prev;
-			}, {})
-		}
+	type CharacterJson = { [key: string]: Character };
+
+	// Import character data from JSON as an array of objects with Character type
+	const characters: Character[] = Object.values(charactersJson as CharacterJson);
+
+	// Import elements and weapons data from JSON
+	const elements = Object.values(elementsJson);
+	const weapons = Object.values(weaponsJson);
+
+	const defaultFilters = {
+		elements: Object.fromEntries(elements.map((element) => [element.id, true])),
+		weapons: Object.fromEntries(weapons.map((weapon) => [weapon.id, true])),
 	};
 
-	function filterList() {
-		list = $characters.filter((character) => {
-			return (
-				filter.elements[character.element] &&
-				filter.weapons[character.weapon]
-			);
-		});
+	// Create reactive states for the tags, elements and weapons lists
+	let all_tags = $state(new Array<string>)
+	let all_elements = $state(new Array<string>);
+	let all_weapons = $state(new Array<string>);
+
+	// Create reactive state for the weapon and element filters and tags list
+	let filter = $state(defaultFilters);
+	let tags = $state(new Array<string>);
+
+	// Create reactive state for the filtered character list
+	let list = $state(new Array<Character>);
+
+	// Function to populate the reactive states with the tags, elements and weapons lists
+	function initLists() {
+		for (const character of characters) {
+			for (const tag of character.tags) {
+				if (!all_tags.includes(tag)) {
+					all_tags.push(tag);
+				}
+			}
+			if (!all_elements.includes(character.element)) {
+				all_elements.push(character.element);
+			}
+			if (!all_weapons.includes(character.weapon)) {
+				all_weapons.push(character.weapon);
+			}
+		}
+		list = characters;
 	}
+
+	// Reactive effect to filter the character list based on the selected filters
+	$effect(() => {
+		list = characters.filter((character) => {
+			const element = filter.elements[character.element];
+			const weapon = filter.weapons[character.weapon];
+			const tag = tags.every((tag) => character.tags.includes(tag));
+			return element && weapon && tag;
+		});
+	})
 
 	function toggleFilter(type: 'elements' | 'weapons', id: string) {
 		const current = Object.values(filter[type]);
@@ -46,16 +76,10 @@
 				filter[type][key] = true;
 			}
 		}
-
-		filterList();
 	}
 
 	onMount(() => {
-		const unsub = characters.subscribe(() => {
-			filterList();
-		});
-
-		return () => unsub();
+		initLists();
 	});
 </script>
 
@@ -66,10 +90,10 @@
 <Title>Characters</Title>
 <div class="mb-4 flex flex-col gap-8 md:flex-row">
 	<div class="flex justify-center gap-2 md:justify-normal">
-		{#each $elements as element}
+		{#each elements as element}
 			<button
 				class="duration-150 hover:opacity-80 {filter.elements[element.id] ? '' : 'opacity-30'}"
-				on:click={() => toggleFilter('elements', element.id)}
+				onclick={() => toggleFilter('elements', element.id)}
 			>
 				<img
 					class="inline-block h-8 w-8"
@@ -82,10 +106,10 @@
 		{/each}
 	</div>
 	<div class="flex flex-wrap justify-center gap-2 md:justify-normal">
-		{#each $weapons as weapon}
+		{#each weapons as weapon}
 			<button
 				class="duration-150 hover:opacity-80 {filter.weapons[weapon.id] ? '' : 'opacity-30'}"
-				on:click={() => toggleFilter('weapons', weapon.id)}
+				onclick={() => toggleFilter('weapons', weapon.id)}
 			>
 				<img
 					class="inline-block h-8 w-12"
