@@ -1,9 +1,9 @@
 <script lang="ts">
 	import CharacterCard from './CharacterCard.svelte';
 	import Title from '$components/Title.svelte';
-	import charactersJson from '$data/characters/en.json';
-	import elementsJson from '$data/elements/en.json';
-	import weaponsJson from '$data/weapons/en.json';
+	import charactersJson from '$data/characters.json';
+	import elementsJson from '$data/elements.json';
+	import weaponsJson from '$data/weapons.json';
 	import { onMount } from 'svelte';
 	import type { Character } from '$types';
 
