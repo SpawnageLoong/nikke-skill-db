@@ -123,6 +123,16 @@
 		{/each}
 	</div>
 </div>
+<div class="flex flex-wrap justify-center gap-2 md:justify-normal">
+	{#each all_tags as tag}
+		<button
+			class="duration-150 hover:opacity-80 {tags.includes(tag) ? '' : 'opacity-30'}"
+			onclick={() => tags = tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag]}
+		>
+			<span class="text-sm leading-none text-white/80">{tag}</span>
+		</button>
+	{/each}
+</div>
 <div class="flex flex-wrap justify-center gap-2 md:justify-normal md:gap-3">
 	{#each list as character (character.id)}
 		<CharacterCard {character} />
